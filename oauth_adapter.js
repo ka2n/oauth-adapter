@@ -158,6 +158,7 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
             method: (method) ? method : 'POST' ,
             parameters: []
         };
+        message.parameters.push(['oauth_callback', "oob"]);
         message.parameters.push(['oauth_consumer_key', consumerKey]);
         message.parameters.push(['oauth_signature_method', signatureMethod]);
         return message;
