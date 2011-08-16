@@ -143,6 +143,17 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
         ));
         Ti.API.debug('Saving access token: done.');
     };
+    this.removeAccessToken = function(pService)
+    {
+        Ti.API.debug('Removing access token [' + pService + '].');
+        var file = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory, pService + '.config');
+        if (file) {
+            file.deleteFile();
+        }
+        accessToken = null;
+        accessTokenSecret = null;
+        Ti.API.debug('Removing access token: done.');
+    }
 
     // will tell if the consumer is authorized
     this.isAuthorized = function()
@@ -158,6 +169,7 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
             method: (method) ? method : 'POST' ,
             parameters: []
         };
+        message.parameters.push(['oauth_callback', "oob"]);
         message.parameters.push(['oauth_consumer_key', consumerKey]);
         message.parameters.push(['oauth_signature_method', signatureMethod]);
         return message;
@@ -221,35 +233,22 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
 
     // looks for the PIN everytime the user clicks on the WebView to authorize the APP
     // currently works with TWITTER
+    // fix from http://d.hatena.ne.jp/pirosikick/20110506/1304650912
     var authorizeUICallback = function(e)
     {
         Ti.API.debug('authorizeUILoaded');
 
-        var xmlDocument = Ti.XML.parseString(e.source.html);
-        var nodeList = xmlDocument.getElementsByTagName('div');
-
-        for (var i = 0; i < nodeList.length; i++)
-        {
-            var node = nodeList.item(i);
-            var id = node.attributes.getNamedItem('id');
-            if (id && id.nodeValue == 'oauth_pin')
-            {
-                pin = node.text;
-
-                if (receivePinCallback) setTimeout(receivePinCallback, 100);
-
-                id = null;
-                node = null;
-
-                destroyAuthorizeUI();
-
-                break;
-            }
+        if(!e || !e.source) {
+            return;
         }
 
-        nodeList = null;
-        xmlDocument = null;
+        var res = e.source.evalJS("window.document.querySelector('#oauth_pin').innerText");
+        if(res) {
+            pin = res;
+            if(receivePinCallback) setTimeout(receivePinCallback, 100);
 
+            destroyAuthorizeUI();
+        }
     };
 
     // shows the authorization UI
@@ -259,7 +258,8 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
 
         window = Ti.UI.createWindow({
             modal: true,
-            fullscreen: true
+            fullscreen: true,
+            navBarHidden: true
         });
         var transform = Ti.UI.create2DMatrix().scale(0);
         view = Ti.UI.createView({
