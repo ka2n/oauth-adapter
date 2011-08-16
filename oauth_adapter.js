@@ -215,7 +215,7 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
 	        Ti.API.debug('destroyAuthorizeUI:webView.removeEventListener');
             webView.removeEventListener('load', authorizeUICallback);
 	        Ti.API.debug('destroyAuthorizeUI:window.close()');
-            window.hide();
+            window.close();
 			// 	        Ti.API.debug('destroyAuthorizeUI:window.remove(view)');
 			// window.remove(view);
 			// 	        Ti.API.debug('destroyAuthorizeUI:view.remove(webView)');
