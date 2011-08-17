@@ -125,8 +125,10 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
         {
             return;
         }
-        if (config.accessToken) accessToken = config.accessToken;
-        if (config.accessTokenSecret) accessTokenSecret = config.accessTokenSecret;
+        if (config) {
+            if (config.accessToken) accessToken = config.accessToken;
+            if (config.accessTokenSecret) accessTokenSecret = config.accessTokenSecret;
+        }
 
         Ti.API.debug('Loading access token: done [accessToken:' + accessToken + '][accessTokenSecret:' + accessTokenSecret + '].');
     };
