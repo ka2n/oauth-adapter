@@ -406,6 +406,7 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
         var pTitle          = params.title;
         var pMethod         = params.method || "POST";
         var resultByXML      = params.resultByXML || false;
+        var pFile           = params.file;
 
         Ti.API.debug('Sending a message to the service at [' + pUrl + '] with the following params: ' + JSON.stringify(pParameters));
         if (accessToken == null || accessTokenSecret == null)
@@ -447,7 +448,12 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
             }
           }
         }
+
         client.open(pMethod, pUrl, false);
+        if (pFile && parameterMap) {
+            parameterMap['file'] = pFile;
+            client.setRequestHeader("Content-type", "multipart/form-data;");
+        }
         client.send(parameterMap);
 
         return null;
