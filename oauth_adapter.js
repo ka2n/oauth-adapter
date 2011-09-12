@@ -429,6 +429,12 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
             parameterMap = null;
             Ti.API.debug('url for GET:'+pUrl);
         }
+        if (pMethod == "DELETE") {
+            pUrl = makeGetURL(pUrl, parameterMap);
+            parameterMap = null;
+            Ti.API.debug('url for DELETE:'+pUrl);
+        }
+
         var client = Ti.Network.createHTTPClient();
         client.onerror = function(e){
           Ti.API.debug(e);
