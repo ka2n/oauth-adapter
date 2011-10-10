@@ -260,34 +260,15 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
 
         window = Ti.UI.createWindow({
             modal: true,
-            fullscreen: true,
-            navBarHidden: true
+            barColor: '#e28629',
         });
-        var transform = Ti.UI.create2DMatrix().scale(0);
         view = Ti.UI.createView({
-            top: 5,
-            width: 310,
-            height: 450,
-            border: 10,
             backgroundColor: 'white',
-            borderColor: '#aaa',
-            borderRadius: 20,
-            borderWidth: 5,
             zIndex: -1,
-            transform: transform
         });
-        closeLabel = Ti.UI.createLabel({
-            textAlign: 'right',
-            font: {
-                fontWeight: 'bold',
-                fontSize: '12pt'
-            },
-            text: '(X)',
-            top: 10,
-            right: 12,
-            height: 14
+        closeButton = Ti.UI.createButton({
+            systemButton: Ti.UI.iPhone.SystemButton.CANCEL
         });
-        window.open();
 
         webView = Ti.UI.createWebView({
             url: pUrl,
@@ -297,15 +278,11 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod)
         webView.addEventListener('load', authorizeUICallback);
         view.add(webView);
 
-        closeLabel.addEventListener('click', destroyAuthorizeUI);
-        view.add(closeLabel);
+        closeButton.addEventListener('click', destroyAuthorizeUI);
+        window.setLeftNavButton(closeButton);
 
         window.add(view);
-
-        var animation = Ti.UI.createAnimation();
-        animation.transform = Ti.UI.create2DMatrix();
-        animation.duration = 500;
-        view.animate(animation);
+        window.open({animate:true});
     };
 
     this.getAccessToken = function(pUrl)
